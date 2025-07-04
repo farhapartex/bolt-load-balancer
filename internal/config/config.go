@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 type ServerConfig struct {
@@ -158,4 +161,27 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+func (c *Config) SaveConfToFile(filename string) error {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		return fmt.Errorf("failed to marshal configuration to YAML: %w", err)
+	}
+
+	err = os.WriteFile(filename, data, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to write configuration file '%s': %w", filename, err)
+	}
+
+	return nil
+}
+
+func (c *Config) DataReprensation() string {
+	// String returns a human-readable string representation of the configuration.
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		return fmt.Sprintf("Error marshaling config: %v", err)
+	}
+	return string(data)
 }
