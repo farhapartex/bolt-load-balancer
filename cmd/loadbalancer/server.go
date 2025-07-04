@@ -124,3 +124,52 @@ func NewBackend(rawURL string, weight int, maxFails int, failTimeout time.Durati
 		FailCount:   0,
 	}, nil
 }
+
+// BackendPool manages a collection of backend servers.
+type BackendPool struct {
+	backends []*Backend
+	mutex    sync.RWMutex
+}
+
+func (bp *BackendPool) AddBackend(backend *Backend) {
+	bp.mutex.Lock()
+	defer bp.mutex.Unlock()
+	bp.backends = append(bp.backends, backend)
+}
+
+func (bp *BackendPool) GetBackends() []*Backend {
+	bp.mutex.RLock()
+	defer bp.mutex.RUnlock()
+	backends := make([]*Backend, len(bp.backends))
+	copy(backends, bp.backends)
+	return backends
+}
+
+func (bp *BackendPool) GetHealthyBackends() []*Backend {
+	bp.mutex.RLock()
+	defer bp.mutex.RUnlock()
+
+	healthy := make([]*Backend, 0)
+	for _, backend := range bp.backends {
+		if backend.IsHealthy() {
+			healthy = append(healthy, backend)
+		}
+	}
+	return healthy
+}
+
+func (bp *BackendPool) Size() int {
+	bp.mutex.RLock()
+	defer bp.mutex.RUnlock()
+	return len(bp.backends)
+}
+
+func (bp *BackendPool) HealthySize() int {
+	return len(bp.GetHealthyBackends())
+}
+
+func NewBackendPool() *BackendPool {
+	return &BackendPool{
+		backends: make([]*Backend, 0),
+	}
+}
