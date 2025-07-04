@@ -1,6 +1,9 @@
 package loadbalancer
 
-import "sync/atomic"
+import (
+	"errors"
+	"sync/atomic"
+)
 
 type Algorithm interface {
 	NextBackend(backends []*Backend) *Backend
@@ -35,4 +38,26 @@ func (rr *RoundRobinAlgorithm) NextBackend(backends []*Backend) *Backend {
 
 func (rr *RoundRobinAlgorithm) Name() string {
 	return "round_robin"
+}
+
+type AlgorithmFactory struct{}
+
+func NewAlgorithmFactory() *AlgorithmFactory {
+	return &AlgorithmFactory{}
+}
+
+func (af *AlgorithmFactory) CreateAlgorithm(strategy string) (Algorithm, error) {
+	// More algorithm will be added here in future
+	switch strategy {
+	case "round_robin":
+		return NewRoundRobinAlgorithm(), nil
+	default:
+		return nil, errors.New("unsupported load balancing strategy: " + strategy)
+	}
+}
+
+func (af *AlgorithmFactory) GetSupportedAlgorithms() []string {
+	return []string{
+		"round_robin",
+	}
 }
