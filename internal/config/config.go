@@ -42,7 +42,7 @@ type Config struct {
 	Logging     LoggingConfig     `yaml:"logging"`
 }
 
-func DeafultConfig() *Config {
+func DefaultConfig() *Config {
 	return &Config{
 		Server: ServerConfig{
 			Port:         8080,

@@ -3,12 +3,13 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v2"
 )
 
 func LoadFromBytes(data []byte) (*Config, error) {
-	config := DeafultConfig()
+	config := DefaultConfig()
 	if err := yaml.Unmarshal(data, config); err != nil {
 		return nil, fmt.Errorf("failed to parse YAML configuration: %w", err)
 	}
@@ -36,4 +37,26 @@ func LoadFromFile(filename string) (*Config, error) {
 	}
 
 	return config, nil
+}
+
+func LoadFromEnv(baseConfig *Config) (*Config, error) {
+	if baseConfig == nil {
+		baseConfig = DefaultConfig()
+	}
+
+	config := *baseConfig
+
+	if port := os.Getenv("LB_PORT"); port != "" {
+		port, err := strconv.Atoi(port)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse port from env: %w", err)
+		}
+		config.Server.Port = port
+	}
+
+	if host := os.Getenv("LB_HOST"); host != "" {
+		config.Server.Host = host
+	}
+
+	return &config, nil
 }
