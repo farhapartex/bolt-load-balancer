@@ -128,7 +128,7 @@ func (lb *LB) Stop(ctx context.Context) error {
 	return lb.httpServer.Shutdown(ctx)
 }
 
-func New(conf *config.Config) (*LB, error) {
+func NewLB(conf *config.Config) (*LB, error) {
 	backendPool := loadbalancer.NewBackendPool()
 
 	for _, be_config := range conf.Backends {
