@@ -92,3 +92,43 @@ func (hc *HealthChecker) Stop() {
 	close(hc.stopChan)
 	hc.wg.Wait()
 }
+
+// helper utility functions for backend health checking
+func (hc *HealthChecker) CheckBackendOnce(backend *loadbalancer.Backend) bool {
+	hc.checkBackend(backend)
+	return backend.IsHealthy()
+}
+
+func (hc *HealthChecker) GetHealthStatus(backendPool *loadbalancer.BackendPool) map[string]interface{} {
+	backends := backendPool.GetBackends()
+	total := len(backends)
+	healthy := 0
+
+	backendStatuses := make([]map[string]interface{}, 0, total)
+
+	for _, backend := range backends {
+		status := map[string]interface{}{
+			"url":        backend.URL.String(),
+			"status":     backend.GetStatus().String(),
+			"fail_count": backend.GetFailCount(),
+		}
+		backendStatuses = append(backendStatuses, status)
+
+		if backend.IsHealthy() {
+			healthy++
+		}
+	}
+
+	return map[string]interface{}{
+		"total_backends":   total,
+		"healthy_backends": healthy,
+		"backends":         backendStatuses,
+		"health_check": map[string]interface{}{
+			"enabled":         hc.config.Enabled,
+			"interval":        hc.config.Interval.String(),
+			"timeout":         hc.config.Timeout.String(),
+			"path":            hc.config.Path,
+			"expected_status": hc.config.ExpectedStatus,
+		},
+	}
+}
