@@ -132,3 +132,16 @@ func (hc *HealthChecker) GetHealthStatus(backendPool *loadbalancer.BackendPool) 
 		},
 	}
 }
+
+func NewHealthChecker(config config.HealthCheckConfig) *HealthChecker {
+	return &HealthChecker{
+		config: config,
+		httpClient: &http.Client{
+			Timeout: config.Timeout,
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				return http.ErrUseLastResponse
+			},
+		},
+		stopChan: make(chan struct{}),
+	}
+}
