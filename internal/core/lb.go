@@ -68,10 +68,12 @@ func (lb *LB) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path == "/health" {
 		lb.handleHealthEndpoint(w, r)
+		return
 	}
 
 	if r.URL.Path == "/status" {
 		lb.handleStatusEndpoint(w, r)
+		return
 	}
 
 	backend := lb.algorithm.NextBackend(lb.backendPool.GetBackends())
