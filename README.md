@@ -1,4 +1,4 @@
-# Bolt Load Balancer
+# Bolt Load Balancer (beta)
 
 A high-performance load balancer written in Go that distributes traffic across multiple backend servers using round-robin algorithm.
 
@@ -145,6 +145,20 @@ curl http://localhost:8100/status
 # Simple load test
 for i in {1..100}; do curl -s http://localhost:8100/ >/dev/null; done
 ```
+
+## Supported Algorithms
+
+### Current Version (v0.1.0)
+
+- `Round Robin` - Distributes requests evenly across all healthy backends
+
+### Coming in Next Versions
+- `Weighted Round Robin (v0.2.0)` - Distribute based on backend capacity weights
+- `Least Connections (v0.2.0)` - Route to backend with fewest active connections
+- `IP Hash (v0.4.0)` - Sticky sessions based on client IP
+- `Adaptive Load Balancing (v1.2.0)` - Machine learning based routing
+
+Built with Go's efficient concurrency model for production-grade performance.
 
 ## Performance
 
