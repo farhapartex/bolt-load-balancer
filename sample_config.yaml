@@ -1,0 +1,34 @@
+server:
+  port: 8100
+  host: "0.0.0.0"
+  read_timeout: "30s"
+  write_timeout: "30s"
+  idle_timeout: "60s"
+
+backends:
+  - url: "http://localhost:8081"
+    weight: 1
+    max_fails: 3
+    fail_timeout: "30s"
+  - url: "http://localhost:8082"
+    weight: 1
+    max_fails: 3
+    fail_timeout: "30s"
+  - url: "http://localhost:8083"
+    weight: 1
+    max_fails: 3
+    fail_timeout: "30s"
+
+strategy: "round_robin"
+
+health_check:
+  enabled: true
+  interval: "30s"
+  timeout: "5s"
+  path: "/health"
+  expected_status: 200
+
+logging:
+  level: "info"
+  format: "text"
+  access_log: true

@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"context"
@@ -172,4 +172,13 @@ func (app *Application) Run() error {
 	app.setupGracefulShutdown(cancel)
 
 	return app.startLoadBalancer(ctx)
+}
+
+func main() {
+	app := &Application{}
+
+	if err := app.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
 }
