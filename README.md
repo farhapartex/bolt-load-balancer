@@ -1,4 +1,4 @@
-# Bolt Load Balancer (beta)
+# Bolt (beta)
 
 A high-performance load balancer written in Go that distributes traffic across multiple backend servers using round-robin algorithm.
 
