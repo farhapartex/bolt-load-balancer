@@ -50,11 +50,43 @@ jobs:
                 go tool cover -func=coverage/coverage.out
                 go tool cover -html=coverage/coverage.out -o coverage/coverage.html
     
-    # docker:
-    #     name: Doker Build & Test
-    #     runs-on: ubuntu-latest
-    #     needs: test
+    docker:
+        name: Doker Build & Test
+        runs-on: ubuntu-latest
+        needs: test
 
-    #     steps:
-    #         - name: Checkout code
-    #           uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                go-version: ${{ env.GO_VERSION }}
+
+            - name: Cache Go modules
+              uses: actions/cache@v3
+              with:
+                path: |
+                    ~/.cache/go-build
+                    ~/go/pkg/mod
+                key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+                restore-keys: |
+                    ${{ runner.os }}-go-
+            
+            - name: Build for multiple platforms
+              run: |
+                GOOS=linux GOARCH=amd64 go build -v -o bin/bolt-loadbalancer-linux-amd64 ./cmd
+                GOOS=darwin GOARCH=amd64 go build -v -o bin/bolt-loadbalancer-darwin-amd64 ./cmd
+                GOOS=windows GOARCH=amd64 go build -v -o bin/bolt-loadbalancer-windows-amd64.exe ./cmd
+
+            - name: Test binary execution
+              run: |
+                chmod +x bin/bolt-loadbalancer-linux-amd64
+                timeout 5s ./bin/bolt-loadbalancer-linux-amd64 --help || true
+
+            - name: Upload build artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: binaries
+                path: bin/
