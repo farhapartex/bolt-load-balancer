@@ -146,6 +146,13 @@ curl http://localhost:8100/status
 for i in {1..100}; do curl -s http://localhost:8100/ >/dev/null; done
 ```
 
+### Run Unit Tests
+```bash
+go test ./tests/  # run all unit tests
+go test -cover ./tests/  # run unit tests with coverage
+done
+```
+
 ## Supported Algorithms
 
 ### Current Version (v0.1.0)
