@@ -7,7 +7,7 @@ on:
         branches: [main]
         types: [opened, synchronize, reopened]
 env:
-    GO_VERSION: '1:24.4'
+    GO_VERSION: '1.24.4'
     DOCKER_IMAGE_NAME: bolt-loadbalancer
 
 jobs:
