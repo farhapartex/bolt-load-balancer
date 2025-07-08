@@ -178,7 +178,7 @@ func (c *Config) SaveConfToFile(filename string) error {
 }
 
 func (c *Config) DataReprensation() string {
-	// String returns a human-readable string representation of the configuration.
+	// DataReprensation returns a human-readable string representation of the configuration. Like Python __str__ method
 	data, err := yaml.Marshal(c)
 	if err != nil {
 		return fmt.Sprintf("Error marshaling config: %v", err)
